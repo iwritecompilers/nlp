@@ -3,4 +3,7 @@ trec
 agend
 
 # IDE or environment related files
-
+venv
+.ipynb_checkpoints
+.idea
+*.iml
