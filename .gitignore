@@ -1,6 +1,7 @@
 # Personal files and datasets
 trec
 agend
+data/
 
 # IDE or environment related files
 venv
