@@ -2,6 +2,8 @@
 trec
 agend
 data/
+most_common_ham.txt
+most_common_spam.txt
 
 # IDE or environment related files
 venv

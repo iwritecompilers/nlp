@@ -158,9 +158,9 @@ data.trec5 = Trec5_6(data.trec.joinpath("trec05p-1"))
 data.trec6 = Trec5_6(data.trec.joinpath("trec06p"))
 data.trec7 = Trec7(data.trec.joinpath("trec07p"))
 data.trec_list = [
-    data.trec5,
+    # data.trec5,
     data.trec6,
-    data.trec7,
+    # data.trec7,
 ]
 
 
@@ -228,8 +228,11 @@ def extract_metadata(encoded_message):
     split_indices.append(len(encoded_message)-1)
     return (sender, content_type, boundary, split_indices)
 
+spam_senders = []
+spam_bodies = []
 
-
+ham_senders = []
+ham_bodies = []
 
 for trec in data.trec_list:
     for corpus, target, is_spam in trec.iterate_targets():
@@ -261,3 +264,48 @@ for trec in data.trec_list:
                     body = parser.current_email
                 except:
                     body = ""
+            
+            if is_spam:
+                spam_bodies.append(body)
+                spam_senders.append(sender)
+            else:
+                ham_bodies.append(body)
+                ham_senders.append(sender)
+
+# displaying most common ham and spam words
+
+from collections import Counter
+import string
+
+extraneous = string.punctuation + "\t\n\r1234567890"
+
+import nltk
+from nltk.corpus import stopwords
+eng_stopwords = stopwords.words('english')
+
+def is_stopword (x):
+    if x in eng_stopwords or x == '':
+        return False
+    else:
+        return True
+
+# Most common words for ham emails
+all_ham = " ".join(ham_bodies).lower()
+filtered_ham = " ".join(list(filter(is_stopword, all_ham.translate(str.maketrans('', '', extraneous)).split(" "))))
+most_common_ham = Counter(filtered_ham.translate(str.maketrans('', '', extraneous)).split(" ")).most_common(100)
+
+all_spam = " ".join(spam_bodies).lower()
+filtered_spam = " ".join(list(filter(is_stopword, all_spam.translate(str.maketrans('', '', extraneous)).split(" "))))
+most_common_spam = Counter(filtered_spam.translate(str.maketrans('', '', extraneous)).split(" ")).most_common(100)
+
+print("Most common ham words")
+fout = open('most_common_ham.txt', "w+")
+for word, count in most_common_ham:
+    fout.write(f"{word} {count}\n")
+fout.close()
+
+print("Most common spam words")
+fout = open('most_common_spam.txt', "w+")
+for word, count in most_common_spam:
+    fout.write(f"{word} {count}\n")
+fout.close()
