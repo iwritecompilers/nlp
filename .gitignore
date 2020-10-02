@@ -4,6 +4,10 @@ agend
 data/
 most_common_ham.txt
 most_common_spam.txt
+ham_word_count.txt
+spam_word_count.txt
+filtered_data.csv
+labeled_data.csv
 
 # IDE or environment related files
 venv

@@ -158,15 +158,14 @@ data.trec5 = Trec5_6(data.trec.joinpath("trec05p-1"))
 data.trec6 = Trec5_6(data.trec.joinpath("trec06p"))
 data.trec7 = Trec7(data.trec.joinpath("trec07p"))
 data.trec_list = [
-    # data.trec5,
+    data.trec5,
     data.trec6,
-    # data.trec7,
+    data.trec7,
 ]
 
 
 
 class MyHTMLParser(HTMLParser):
-    
     def __init__ (self):
         super(MyHTMLParser, self).__init__()
         self.current_email = ""
@@ -257,55 +256,71 @@ for trec in data.trec_list:
                     parser.feed(b"".join(encoded_message[j+1:y]).decode(charset))
                     body = parser.current_email
             else:
-                print("--- EMAIL: --- ", target, is_spam)
                 try:
+                    print("--- EMAIL: --- ", target, is_spam)
                     parser = MyHTMLParser()   
                     parser.feed(b"".join(encoded_message[split_indices[0]:split_indices[1]]).decode(charset))
                     body = parser.current_email
                 except:
                     body = ""
+                
             
+            if len(body) <= 1:
+                continue
+
             if is_spam:
                 spam_bodies.append(body)
                 spam_senders.append(sender)
             else:
                 ham_bodies.append(body)
                 ham_senders.append(sender)
-
+            
 # displaying most common ham and spam words
 
-from collections import Counter
-import string
+# from collections import Counter
+# import string
 
-extraneous = string.punctuation + "\t\n\r1234567890"
+# extraneous = string.punctuation + "\t\n\r1234567890"
 
-import nltk
-from nltk.corpus import stopwords
-eng_stopwords = stopwords.words('english')
+# import nltk
+# from nltk.corpus import stopwords
+# eng_stopwords = stopwords.words('english')
 
-def is_stopword (x):
-    if x in eng_stopwords or x == '':
-        return False
-    else:
-        return True
+# def is_stopword (x):
+#     if x in eng_stopwords or x == '':
+#         return False
+#     else:
+#         return True
 
-# Most common words for ham emails
-all_ham = " ".join(ham_bodies).lower()
-filtered_ham = " ".join(list(filter(is_stopword, all_ham.translate(str.maketrans('', '', extraneous)).split(" "))))
-most_common_ham = Counter(filtered_ham.translate(str.maketrans('', '', extraneous)).split(" ")).most_common(100)
+# # Most common words for ham emails
+# all_ham = " ".join(ham_bodies).lower()
+# filtered_ham = " ".join(list(filter(is_stopword, all_ham.translate(str.maketrans('', '', extraneous)).split(" "))))
+# most_common_ham = Counter(filtered_ham.translate(str.maketrans('', '', extraneous)).split(" ")).most_common()
 
-all_spam = " ".join(spam_bodies).lower()
-filtered_spam = " ".join(list(filter(is_stopword, all_spam.translate(str.maketrans('', '', extraneous)).split(" "))))
-most_common_spam = Counter(filtered_spam.translate(str.maketrans('', '', extraneous)).split(" ")).most_common(100)
+# all_spam = " ".join(spam_bodies).lower()
+# filtered_spam = " ".join(list(filter(is_stopword, all_spam.translate(str.maketrans('', '', extraneous)).split(" "))))
+# most_common_spam = Counter(filtered_spam.translate(str.maketrans('', '', extraneous)).split(" ")).most_common()
 
-print("Most common ham words")
-fout = open('most_common_ham.txt', "w+")
-for word, count in most_common_ham:
-    fout.write(f"{word} {count}\n")
-fout.close()
+# print("Most common ham words")
+# fout = open('most_common_ham.txt', "w+")
+# for word, count in most_common_ham:
+#     fout.write(f"{word} {count}\n")
+# fout.close()
 
-print("Most common spam words")
-fout = open('most_common_spam.txt', "w+")
-for word, count in most_common_spam:
-    fout.write(f"{word} {count}\n")
-fout.close()
+# print("Most common spam words")
+# fout = open('most_common_spam.txt', "w+")
+# for word, count in most_common_spam:
+#     fout.write(f"{word} {count}\n")
+# fout.close()
+
+# Saving all data into one csv file using pandas
+from pandas import DataFrame
+
+true_list = [True for i in range(len(spam_bodies))]
+false_list = [False for i in range(len(ham_bodies))]
+
+zipped_list = list(zip(ham_bodies + spam_bodies, ham_senders + spam_senders, false_list + true_list))
+
+print(len(ham_bodies + spam_bodies), len(ham_senders + spam_senders), len(false_list + true_list))
+df = DataFrame(zipped_list, columns=['message', 'sender', 'label'])
+df.to_csv('labeled_data.csv')
