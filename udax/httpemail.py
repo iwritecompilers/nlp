@@ -2,6 +2,7 @@
 A specialized module to handle reading emails
 in the form of HTTP responses.
 """
+import sys
 from pathlib import Path
 from collections import Counter
 from html.parser import HTMLParser
@@ -71,10 +72,14 @@ class HttpEmail:
         self.body = None
         self.words = None           # standalone list of words
         self.stopwords = stopwords
-        self.word_table = {}        # map <word> -> [<count>, <relative-freq>] 
-                                    # we use lists to modify the data later
+        self.word_table = {}        # map <word> -> (<count>, <relative-freq>) 
+
         self._load_email()
         self._gen_word_frequencies()
+
+    def print_word_table(self, fd=sys.stdout): 
+        for word, statistic in self.word_table.items():
+            fd.write(f"{word} {statistic[0]} {statistic[1]}\n")
 
     def _gen_word_frequencies(self):
         total_words = len(self.words)
@@ -83,7 +88,7 @@ class HttpEmail:
 
         for word, count in Counter(self.words).items():
             relative_freq = count / total_words
-            self.word_table[word] = [count, relative_freq]
+            self.word_table[word] = (count, relative_freq)
 
     def _load_email(self):
         encoded_message = []
@@ -111,7 +116,7 @@ class HttpEmail:
                         break
                 lineset = encoded_message[j:y]
                 self.parser.feed(b"".join(lineset).decode(charset))
-            self.parser_close()
+            self.parser.close()
         else:
             try:
                 begin = split_indices[0]
