@@ -31,7 +31,7 @@ while feature_count is None:
         print("Invalid integer")
 
 
-trec_df_path = Path(f"data/trec-df-{feature_count}")
+trec_df_path = Path(f"data/trec/df-{feature_count}")
 if not trec_df_path.exists():
     print(f"Requested dataframe does not exist {trec_df_path}")
     sys.exit(1)

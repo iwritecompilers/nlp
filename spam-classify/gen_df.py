@@ -17,7 +17,7 @@ from pathlib import Path
 # state.
 # ----------------------------
 
-trec_cache = Path("data/trec-cache")
+trec_cache = Path("data/trec/cache")
 trec_table_path = trec_cache.joinpath("DICT")
 
 if not trec_cache.exists():
@@ -59,7 +59,7 @@ while feature_count is None:
 # and where 'is_spam' is a boolean identifying
 # if the target is spam or not.
 
-trec_df_path = Path(f"data/trec-df-{feature_count}")
+trec_df_path = Path(f"data/trec/df-{feature_count}")
 if trec_df_path.exists():
     desire = None
     while desire is None and (desire != 'y' and desire != 'n'):

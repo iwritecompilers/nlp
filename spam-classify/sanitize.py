@@ -10,8 +10,8 @@ ham_indicator = "ham"
 
 # The default directories from which to copy
 # and move to.
-source_dir = Path("./data/trec-raw/")
-target_dir = Path("./data/trec/")
+source_dir = Path("data/trec/raw")
+target_dir = Path("data/trec/sanitized")
 
 # Maintains a count reference for each file
 # added to the targets directory for renaming and

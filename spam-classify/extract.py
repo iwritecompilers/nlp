@@ -10,11 +10,11 @@ from udax.httpemail import HttpEmail
 # prepare for data extraction.
 # -------------------------------------
 
-trec = Path("data/trec")
-trec_cache = Path("data/trec-cache")
-trec_raw = Path("data/trec-raw")
+trec = Path("data/trec/sanitized")
+trec_cache = Path("data/trec/cache")
+trec_raw = Path("data/trec/raw")
 
-trec_table_path = Path("data/trec-cache/DICT")
+trec_table_path = trec_cache.joinpath("DICT")
 
 
 if not trec_raw.exists():
